@@ -4,10 +4,25 @@ const formEl = document.querySelector('#task-form')
 const createTaskHandler = (event) => {
     event.preventDefault()
 
-    const taskItemEl = document.createElement('li')
-    taskItemEl.textContent = 'This is a new task'
-    taskItemEl.className = 'task-item'
-    tasksToDoEl.appendChild(taskItemEl)
+    const taskNameInput = document.querySelector("input[name='task-name']").value
+    const taskTypeInput = document.querySelector("select[name='task-type']").value
+    
+    //Create list item
+    const listItemEl = document.createElement('li')
+    listItemEl.className = 'task-item'
+    
+    //Create div to hold task name/type and add to listItemEl
+    const taskInfoEl = document.createElement('div')
+    taskInfoEl.className = "task-info"
+    
+    taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskNameInput + "</h3><span class='task-type'>" + taskTypeInput + "</span>"
+
+    //Append to listItemEl
+    listItemEl.appendChild(taskInfoEl)
+
+    //Append entire list item to toDolist
+    tasksToDoEl.appendChild(listItemEl)
+    
 
 }
 formEl.addEventListener('submit', createTaskHandler)
