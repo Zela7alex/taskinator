@@ -1,10 +1,13 @@
-const buttonEl = document.querySelector('#save-task')
 const tasksToDoEl = document.querySelector('#tasks-to-do')
+const formEl = document.querySelector('#task-form')
 
-const createTaskHandler = () => {
+const createTaskHandler = (event) => {
+    event.preventDefault()
+
     const taskItemEl = document.createElement('li')
     taskItemEl.textContent = 'This is a new task'
     taskItemEl.className = 'task-item'
     tasksToDoEl.appendChild(taskItemEl)
+
 }
-buttonEl.addEventListener('click', createTaskHandler)
+formEl.addEventListener('submit', createTaskHandler)
