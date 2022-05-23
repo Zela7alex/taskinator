@@ -3,6 +3,7 @@ const formEl = document.querySelector('#task-form')
 const pageContentEl = document.querySelector('#page-content')
 const tasksInProgressEl = document.querySelector("#tasks-in-progress")
 const tasksCompletedEl = document.querySelector("tasks-completed")
+const tasks = []
 let taskIdCounter = 0;
 
 //** Function **/ This is where creating the list items begins by using the form and adding new tasks as well as editing tasks
@@ -31,7 +32,8 @@ const taskFormHandler = (event) => {
     //task info made into object
     taskDataObj = {
         name: taskNameInput,
-        type: taskTypeInput
+        type: taskTypeInput,
+        status: "to do"
      }
      //Sending taskDataObj as an argument to createTaskEl()
     createTaskEl(taskDataObj)
@@ -59,9 +61,16 @@ const createTaskEl = taskDataObj => {
   
       //Append entire list item to toDolist
       tasksToDoEl.appendChild(listItemEl) 
+      
+      //Adding data id to task object in taskHandlerForm()
+      taskDataObj.id = taskIdCounter
+      tasks.push(taskDataObj)//pushing the taskDataObj created to tasks Array
 
       //Increasing task counter for next unique id on each task 
       taskIdCounter++
+
+      console.log(taskDataObj)
+      console.log(taskDataObj.status)
 
 }
 //** Function **/ This is creating the elements for "edit", "delete", "status of task"
@@ -108,7 +117,7 @@ const createTaskActions = taskId => {
     return actionContainerEl
 }
 
-//** Function **/ Shows and mataches which element on screen is being clicked using the event.target
+//** Function **/ Shows and matches which element on screen is being clicked using the event.target
 const taskButtonHandler = (event) => {
     const targetEl = event.target // get's target element from event 
     console.log(targetEl) // identifies what container is being clicked
@@ -126,6 +135,19 @@ const taskButtonHandler = (event) => {
 const deleteTask = taskId => {
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']")
     taskSelected.remove() // remove() is a method that will remove the item from the page 
+
+    //Creating new array to hold updated list of tasks
+    const updatedTaskArr = [];
+    // Looping through each task in array to sync with CURRENT task
+    tasks.forEach(tasksArray)
+    function tasksArray(eachTask) {
+    if(eachTask.id !== parseInt(taskId)){
+        updatedTaskArr.push(eachTask)
+     }
+    }
+
+    tasks = updatedTaskArr // the tasks NOT being selected in deleteTask() will be pushed to updatedTaskArr [] and will then be set equal to tasks [] array. Now tasks [] array will only be the tasks that are not being deleted in this function.
+
 }
 
 //** Function **/ This function will grab the task made and plug the text content of task Name and task Type back into input fields in the form
@@ -156,6 +178,15 @@ const completeEditTask = (taskName, taskType, taskId) => {
     taskSelected.querySelector("h3.task-name").textContent = taskName
     taskSelected.querySelector("span.task-type").textContent = taskType 
 
+    // Looping through each task in array to sync with CURRENT taskDataObject's edited taskName and edited TaskType
+    tasks.forEach(tasksArray)
+    function tasksArray(eachTask){
+        if (eachTask.id === parseInt(taskId)){
+            eachTask.name = taskName
+            eachTask.type = taskType
+        }
+    }
+
     alert("Task Updated!")
 
     // Resetting the form back to regular formEl process with initial data-task-id
@@ -180,6 +211,14 @@ const taskStatusChangeHandler = (event) => {
         tasksInProgressEl.appendChild(taskSelected)
     } else if (statusValue === "completed") {
         tasksCompletedEl.appendChild(taskSelected)
+    }
+
+    // Looping through each task in array syncing with CURRENT taskDataobject's statusValue
+    tasks.forEach(tasksArray)
+    function tasksArray(eachTask){
+        if(eachTask.id === parseInt(taskId)){
+            eachTask.status = statusValue
+        }
     }
 }
 
