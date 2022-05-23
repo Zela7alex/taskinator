@@ -226,7 +226,7 @@ footer {
   }
 
   .task-list-wrapper {
-    flex-basis: 100%;
+    flex-basis: 100%; /* Allows it to take up entire scren */
   }
 
 }
