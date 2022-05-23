@@ -6,7 +6,11 @@ const tasksCompletedEl = document.querySelector("tasks-completed")
 const tasks = []
 let taskIdCounter = 0;
 
-//** Function **/ This is where creating the list items begins by using the form and adding new tasks as well as editing tasks
+// STEP 1) : Use DOM to properly select each new task created & their values through data attribute "taskId".
+// STEP 2) : Add Edit and delete functionality to DOM elements.
+// STEP 3) : Save to local storage by saving all current created taskDataObj to tasks [] array.
+
+//** FUNCTION **/ This is where creating the list items begins by using the form and adding new tasks as well as editing tasks
 const taskFormHandler = (event) => {
     event.preventDefault()
 
@@ -39,7 +43,7 @@ const taskFormHandler = (event) => {
     createTaskEl(taskDataObj)
     }
 }
-//** Function **/ This creates the actual task list element
+//** FUNCTION **/ This creates the actual task list element
 const createTaskEl = taskDataObj => {
       //Create list item
       const listItemEl = document.createElement('li')
@@ -66,14 +70,12 @@ const createTaskEl = taskDataObj => {
       taskDataObj.id = taskIdCounter
       tasks.push(taskDataObj)//pushing the taskDataObj created to tasks Array
 
+      saveTasks(); // Saving to local storage
+
       //Increasing task counter for next unique id on each task 
       taskIdCounter++
-
-      console.log(taskDataObj)
-      console.log(taskDataObj.status)
-
 }
-//** Function **/ This is creating the elements for "edit", "delete", "status of task"
+//** FUNCTION **/ This is creating the elements for "edit", "delete", "status of task"
 const createTaskActions = taskId => {
     const actionContainerEl = document.createElement('div')
     actionContainerEl.className = 'task-actions'
@@ -114,10 +116,12 @@ const createTaskActions = taskId => {
         statusSelectEl.appendChild(statusOptionEl)
     }
 
+    saveTasks() //Saving to local storage
+
     return actionContainerEl
 }
 
-//** Function **/ Shows and matches which element on screen is being clicked using the event.target
+//** FUNCTION **/ Shows and matches which element on screen is being clicked using the event.target
 const taskButtonHandler = (event) => {
     const targetEl = event.target // get's target element from event 
     console.log(targetEl) // identifies what container is being clicked
@@ -147,10 +151,12 @@ const deleteTask = taskId => {
     }
 
     tasks = updatedTaskArr // the tasks NOT being selected in deleteTask() will be pushed to updatedTaskArr [] and will then be set equal to tasks [] array. Now tasks [] array will only be the tasks that are not being deleted in this function.
+    
+    saveTasks() //Saving to local storage
 
 }
 
-//** Function **/ This function will grab the task made and plug the text content of task Name and task Type back into input fields in the form
+//** FUNCTION **/ This function will grab the task made and plug the text content of task Name and task Type back into input fields in the form
 const editTask = taskId => {
     console.log('editing task #' + taskId)
 
@@ -170,7 +176,7 @@ const editTask = taskId => {
     formEl.setAttribute("data-task-id", taskId)
    
 }
-//** Function */ Will finish changing text of task items
+//** FUNCTION */ Will finish changing text of task items
 const completeEditTask = (taskName, taskType, taskId) => {
     // Finding the matching task list item
     let taskSelected = document.querySelector(".task-item[data-task-id='" + taskId +"']")
@@ -194,7 +200,7 @@ const completeEditTask = (taskName, taskType, taskId) => {
     document.querySelector("#save-task").textContent = "Add Task"
  
 }
-//** Function */ Changes task item to other columns
+//** FUNCTION */ Changes task item to other columns
 const taskStatusChangeHandler = (event) => {
     // getting the task item's id
     const taskId = event.target.getAttribute("data-task-id")
@@ -220,6 +226,12 @@ const taskStatusChangeHandler = (event) => {
             eachTask.status = statusValue
         }
     }
+    saveTasks() //Saving to local storage
+}
+
+//** FUNCTION */ Saves tasks array to local storage
+const saveTasks = () => {
+    localStorage.setItem("tasks", JSON.stringify(tasks))// Remember to turn back to string or it will not show in localstorage
 }
 
 
