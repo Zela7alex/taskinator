@@ -20,7 +20,8 @@ This application will run on most browsers up to date with ES6 without any issue
 
 https://user-images.githubusercontent.com/93490778/170375001-f7b5a37e-add5-4ac7-afa3-e624df296aa0.mov
 
-
+##
+Git Pages : https://zela7alex.github.io/taskinator/
 
 ## How It's Made 
 - Javascript ES6 
