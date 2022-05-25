@@ -22,7 +22,9 @@ const taskFormHandler = (event) => {
         alert("You need to fill out the task form!")
         return false // This will stop the function from runnning if both inputs are empty, will not create list item
     }
-    formEl.reset() //resets form inputs to original state(only works on forms) 
+    // reset form fields for next task to be entered
+    document.querySelector("input[name='task-name']").value = ''
+    document.querySelector("select[name='task-type']").selectedIndex = 0
 
     const isEdit = formEl.hasAttribute("data-task-id");
      //Willl show false if the task does not have a data-task-id (Remember that data-task-id is created when createTaskEl function runs and all consecutive functions, so "false" will show up first for the listitemEl)
@@ -62,10 +64,24 @@ const createTaskEl = taskDataObj => {
       //Append the createTaskActions() to listItemEl with taskIdCounter
       const taskActionsEl = createTaskActions(taskIdCounter)
       listItemEl.appendChild(taskActionsEl)
+
+      switch (taskDataObj.status) {
+        case "to do":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 0;
+          tasksToDoEl.append(listItemEl);
+          break;
+        case "in progress":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 1;
+          tasksInProgressEl.append(listItemEl);
+          break;
+        case "completed":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 2;
+          tasksCompletedEl.append(listItemEl);
+          break;
+        default:
+          console.log("Something went wrong!");
+      }
   
-      //Append entire list item to toDolist
-      tasksToDoEl.appendChild(listItemEl) 
-      
       //Adding data id to task object in taskHandlerForm()
       taskDataObj.id = taskIdCounter
       tasks.push(taskDataObj)//pushing the taskDataObj created to tasks Array
@@ -236,48 +252,25 @@ const saveTasks = () => {
 
 //** FUNCTION */ loads Tasks back onto page from local Storage
 const loadTasks = () => {
-    tasks = localStorage.getItem("tasks", tasks)
+    let savedTasks = localStorage.getItem("tasks")
     
-    if(tasks === null){ //This will ensure tasks array is empty again
-        tasks = []
+    if(savedTasks === null){ // if array returns null
         return false
     }
-    tasks = JSON.parse(tasks)
-    console.log(tasks)
-    //Recreating each task item to load back on page by looping through "new" tasks array grabbed from local storage
-    for(let i = 0; i < tasks.length; i++){
-        tasks[i].id = taskIdCounter // setting each iterations in tasks to taskIdCounter 
-        const listItemEl = document.createElement("li")
-        listItemEl.className = 'task-item'
-        listItemEl.setAttribute('data-task-id',tasks[i].id)
-
-        const taskInfoEl = document.createElement("div")
-        taskInfoEl.className = 'task-info'
-        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>"
-        listItemEl.appendChild(taskInfoEl)
-
-        const taskActionsEl = createTaskActions(tasks[i].id)
-        listItemEl.appendChild(taskActionsEl)
-
-        if (tasks[i].status === 'to do'){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex = 0
-            tasksToDoEl.appendChild(listItemEl)
-        } else if (tasks[i].status === 'in progress'){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex = 1
-            tasksInProgressEl.appendChild(listItemEl)
-        } else if (tasks[i].status === 'completed'){
-            listItemEl.querySelector("select[name='status-change']").selectedIndex = 2
-            tasksCompletedEl.appendChild(listItemEl)
-        }
-        taskIdCounter ++
-        console.log(listItemEl)
+    savedTasks = JSON.parse(savedTasks)
+    console.log(savedTasks)
     
+    savedTasks.forEach(tasksArray)
 
+    //Looping through savedTasks array
+    function tasksArray(eachTask){
+        createTaskEl(eachTask) // passing each task object coming from localStorage through createTaskEl() in order to load back onto page
     }
+    
 }
-
 
 pageContentEl.addEventListener('click', taskButtonHandler)
 pageContentEl.addEventListener('change', taskStatusChangeHandler)
 formEl.addEventListener('submit', taskFormHandler)
 loadTasks()
+
