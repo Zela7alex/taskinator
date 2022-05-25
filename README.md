@@ -19,6 +19,6 @@ This application will run on most browsers up to date with ES6 without any issue
 
 
 ## How It's Made 
--Javascript ES6 
+- Javascript ES6 
 
 
