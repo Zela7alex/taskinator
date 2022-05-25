@@ -2,8 +2,8 @@ const tasksToDoEl = document.querySelector('#tasks-to-do')
 const formEl = document.querySelector('#task-form')
 const pageContentEl = document.querySelector('#page-content')
 const tasksInProgressEl = document.querySelector("#tasks-in-progress")
-const tasksCompletedEl = document.querySelector("tasks-completed")
-const tasks = []
+const tasksCompletedEl = document.querySelector("#tasks-completed")
+let tasks = []
 let taskIdCounter = 0;
 
 // STEP 1) : Use DOM to properly select each new task created & their values through data attribute "taskId".
@@ -229,12 +229,55 @@ const taskStatusChangeHandler = (event) => {
     saveTasks() //Saving to local storage
 }
 
-//** FUNCTION */ Saves tasks array to local storage
+//** FUNCTION */ Saves tasks array to local storage- This array will be called any time an task item is changed
 const saveTasks = () => {
     localStorage.setItem("tasks", JSON.stringify(tasks))// Remember to turn back to string or it will not show in localstorage
+}
+
+//** FUNCTION */ loads Tasks back onto page from local Storage
+const loadTasks = () => {
+    tasks = localStorage.getItem("tasks", tasks)
+    
+    if(tasks === null){ //This will ensure tasks array is empty again
+        tasks = []
+        return false
+    }
+    tasks = JSON.parse(tasks)
+    console.log(tasks)
+    //Recreating each task item to load back on page by looping through "new" tasks array grabbed from local storage
+    for(let i = 0; i < tasks.length; i++){
+        tasks[i].id = taskIdCounter // setting each iterations in tasks to taskIdCounter 
+        const listItemEl = document.createElement("li")
+        listItemEl.className = 'task-item'
+        listItemEl.setAttribute('data-task-id',tasks[i].id)
+
+        const taskInfoEl = document.createElement("div")
+        taskInfoEl.className = 'task-info'
+        taskInfoEl.innerHTML = "<h3 class='task-name'>" + tasks[i].name + "</h3><span class='task-type'>" + tasks[i].type + "</span>"
+        listItemEl.appendChild(taskInfoEl)
+
+        const taskActionsEl = createTaskActions(tasks[i].id)
+        listItemEl.appendChild(taskActionsEl)
+
+        if (tasks[i].status === 'to do'){
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 0
+            tasksToDoEl.appendChild(listItemEl)
+        } else if (tasks[i].status === 'in progress'){
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 1
+            tasksInProgressEl.appendChild(listItemEl)
+        } else if (tasks[i].status === 'completed'){
+            listItemEl.querySelector("select[name='status-change']").selectedIndex = 2
+            tasksCompletedEl.appendChild(listItemEl)
+        }
+        taskIdCounter ++
+        console.log(listItemEl)
+    
+
+    }
 }
 
 
 pageContentEl.addEventListener('click', taskButtonHandler)
 pageContentEl.addEventListener('change', taskStatusChangeHandler)
 formEl.addEventListener('submit', taskFormHandler)
+loadTasks()
